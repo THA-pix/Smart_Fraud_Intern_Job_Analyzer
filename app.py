@@ -13,9 +13,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, classification_report
-from PIL import Image
-from transformers import BertTokenizer, TFBertModel
-from tensorflow.keras import layers, models
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
@@ -27,29 +25,20 @@ df = None
 accuracy = 0
 report = {}
 
-import os
-import mysql.connector
-
-DB_HOST = os.environ.get("MYSQLHOST")
-DB_PORT = int(os.environ.get("MYSQLPORT", 3306))
-DB_USER = os.environ.get("MYSQLUSER")
-DB_PASSWORD = os.environ.get("MYSQLPASSWORD")
-DB_NAME = os.environ.get("MYSQLDATABASE")
-
 def get_db():
     return mysql.connector.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
+        host="localhost",
+        user="root",
+        password="",
+        database="fraud_job",
         charset="utf8"
     )
 
 # ─────────────────────────────────────────────────────────────────────
-# Load ML models defensively. If these files are missing under a
-# "models/" folder next to app.py, the app still starts instead of
-# crashing on import — related prediction routes just report the
+# Load ML models defensively. If these files are missing (they are NOT
+# included in the static/templates upload and must be placed under a
+# "models/" folder next to app.py), the app still starts instead of
+# crashing on import — image-based prediction will just report that the
 # model isn't available until the files are added.
 # ─────────────────────────────────────────────────────────────────────
 img_model = None
@@ -388,6 +377,8 @@ def process2():
     if 'admin' not in session:
         return redirect('/admin')
     df = read_dataset()
+    if df is None:
+        return "Dataset not found!"
     drop_cols = ['hostname', 'ip_address', 'timestamp']
     df = df.drop(columns=[col for col in drop_cols if col in df.columns], errors='ignore')
     summary = []
@@ -509,13 +500,16 @@ def admin_logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        db  = get_db()
-        cur = db.cursor()
-        cur.execute("INSERT INTO users(name,email,mobile,username,password) VALUES (%s,%s,%s,%s,%s)",
-                    (request.form["name"], request.form["email"], request.form["mobile"],
-                     request.form["username"], request.form["password"]))
-        db.commit()
-        return redirect("/login")
+        try:
+            db  = get_db()
+            cur = db.cursor()
+            cur.execute("INSERT INTO users(name,email,mobile,username,password) VALUES (%s,%s,%s,%s,%s)",
+                        (request.form["name"], request.form["email"], request.form["mobile"],
+                         request.form["username"], request.form["password"]))
+            db.commit()
+            return redirect("/login")
+        except mysql.connector.Error as e:
+            return render_template("register.html", error=f"Registration failed: {e}")
     return render_template("register.html")
 
 
@@ -523,13 +517,16 @@ def register():
 def login():
     if request.method == "POST":
         db  = get_db()
-        cur = db.cursor()
+        cur = db.cursor(dictionary=True)
         cur.execute("SELECT * FROM users WHERE username=%s AND password=%s",
                     (request.form["username"], request.form["password"]))
         user = cur.fetchone()
         if user:
-            session["user"] = user[1]
+            # Store the actual username (not the display name) so it matches
+            # the "username" column used everywhere else (predictions, etc.)
+            session["user"] = user["username"]
             return redirect("/dashboard")
+        return render_template("login.html", error="Invalid username or password")
     return render_template("login.html")
 
 
@@ -538,75 +535,14 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-class FraudJobModel:
-    def __init__(self):
-        self.tokenizer   = BertTokenizer.from_pretrained('bert-base-uncased')
-        self.bert_model  = TFBertModel.from_pretrained('bert-base-uncased')
-        self.cnn_model   = self.build_cnn()
-        self.final_model = self.build_final_model()
-
-    def build_cnn(self):
-        inputs = layers.Input(shape=(224, 224, 3))
-        x = layers.Conv2D(32,  (3, 3), activation='relu')(inputs)
-        x = layers.MaxPooling2D((2, 2))(x)
-        x = layers.Conv2D(64,  (3, 3), activation='relu')(x)
-        x = layers.MaxPooling2D((2, 2))(x)
-        x = layers.Conv2D(128, (3, 3), activation='relu')(x)
-        x = layers.MaxPooling2D((2, 2))(x)
-        x = layers.Flatten()(x)
-        x = layers.Dense(128, activation='relu')(x)
-        return models.Model(inputs, x)
-
-    def build_final_model(self):
-        text_input  = layers.Input(shape=(768,))
-        image_input = layers.Input(shape=(128,))
-        combined = layers.Concatenate()([text_input, image_input])
-        x = layers.Dense(256, activation='relu')(combined)
-        x = layers.Dropout(0.3)(x)
-        x = layers.Dense(128, activation='relu')(x)
-        x = layers.Dropout(0.2)(x)
-        output = layers.Dense(1, activation='sigmoid')(x)
-        model = models.Model([text_input, image_input], output)
-        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-        return model
-
-    def preprocess_text(self, text):
-        return self.tokenizer(text, return_tensors="tf", truncation=True,
-                              padding='max_length', max_length=128)
-
-    def extract_text_features(self, text):
-        inputs  = self.preprocess_text(text)
-        outputs = self.bert_model(**inputs)
-        return outputs.last_hidden_state[:, 0, :].numpy()
-
-    def preprocess_image(self, image_path):
-        img = Image.open(image_path).convert("RGB").resize((224, 224))
-        img = np.array(img) / 255.0
-        return np.expand_dims(img, axis=0)
-
-    def extract_image_features(self, image_path):
-        return self.cnn_model.predict(self.preprocess_image(image_path), verbose=0)
-
-    def train(self, texts, images, labels):
-        text_features  = np.array([self.extract_text_features(t)[0]  for t in texts])
-        image_features = np.array([self.extract_image_features(i)[0] for i in images])
-        self.final_model.fit([text_features, image_features], np.array(labels),
-                             epochs=5, batch_size=8, validation_split=0.2)
-
-    def predict(self, text=None, image_path=None):
-        text_feat  = np.zeros((1, 768))
-        image_feat = np.zeros((1, 128))
-        if text:       text_feat  = self.extract_text_features(text)
-        if image_path: image_feat = self.extract_image_features(image_path)
-        prediction = self.final_model.predict([text_feat, image_feat])[0][0]
-        return {"prediction": "Legitimate" if prediction > 0.5 else "Fake",
-                "confidence": float(prediction)}
-
-
 def predict_image(path):
     filename = os.path.basename(path).lower()
     if "fake"  in filename: return "Fake"
     if "legit" in filename: return "Legitimate"
+
+    if img_model is None:
+        return "Error in Prediction"
+
     try:
         img  = image.load_img(path, target_size=(128, 128))
         img  = image.img_to_array(img) / 255.0
@@ -706,8 +642,6 @@ def analyze_description(text):
 
     return "Fake", salary, reg_required, fee
 
-
-from werkzeug.utils import secure_filename
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -1020,13 +954,6 @@ def logout():
     session.clear()
     return redirect("/login")
 
-import os
-
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
+    app.run(debug=False)
