@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dataset Preview | InternGuard Admin</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #22c55e;
+    --primary-dark: #16a34a;
+    --light-green: #ecfdf5;
+}
+
+/* BODY */
+body {
+    background: #ffffff;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    position: fixed;
+    color: white;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px 22px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.content {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+/* HEADER */
+.page-header {
+    background: var(--light-green);
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* CARD */
+.table-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* SCROLL AREA */
+.table-wrapper {
+    max-height: 420px;
+    overflow: auto;
+    border-radius: 12px;
+}
+
+/* TABLE FULL BORDER GRID */
+.table {
+    margin: 0;
+    border-collapse: collapse; /* IMPORTANT */
+    font-size: 13px;
+}
+
+/* HEADER */
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: white;
+
+    padding: 8px;
+    white-space: nowrap;
+
+    border: 1px solid #16a34a; /* BORDER */
+}
+
+/* CELLS */
+.table td {
+    padding: 6px 8px;
+    white-space: nowrap;
+
+    border: 1px solid #e5e7eb; /* FULL GRID BORDER */
+}
+
+/* ROW HOVER */
+.table tbody tr:hover {
+    background: #ecfdf5;
+}
+
+/* ROW HOVER */
+.table tbody tr:hover {
+    background: #f0fdf4;
+}
+.table td, 
+.table th {
+    border: 1px solid #cbd5e1; /* stronger grey */
+}
+/* zebra rows for readability */
+.table tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+/* BUTTON */
+.btn-next {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.btn-next:hover {
+    opacity: 0.9;
+}
+
+/* REMOVE LINK STYLE */
+a {
+    text-decoration: none !important;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar p-3">
+    <h4 class="text-center mb-4">
+        <i class="fa fa-shield-halved"></i> InternGuard
+        <small class="d-block fs-6">Admin Panel</small>
+    </h4>
+
+    <a href="/admin_dashboard">
+        <i class="fa fa-gauge me-2"></i> Dashboard
+    </a>
+
+    <a href="/view_users">
+        <i class="fa fa-users me-2"></i> Users
+    </a>
+
+    <a href="/process1" class="active">
+        <i class="fa fa-brain me-2"></i> Train Model
+    </a>
+
+    <a href="/admin_analytics">
+        <i class="fa fa-chart-line me-2"></i> Analytics
+    </a>
+
+    <a href="/view_feedback">
+        <i class="fa fa-comments me-2"></i> Feedback
+    </a>
+
+    <hr>
+
+    <a href="/admin_logout" class="text-warning">
+        <i class="fa fa-sign-out-alt me-2"></i> Logout
+    </a>
+</div>
+
+<!-- MAIN -->
+<div class="content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h3><i class="fa fa-table"></i> Dataset Preview</h3>
+        <p>Showing first 20 rows of uploaded dataset.</p>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="table-card">
+
+        <div class="table-wrapper">
+
+            <table class="table text-center align-middle">
+
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for val in row %}
+                        <td>{{ val }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- BUTTON -->
+        <div class="text-end mt-3">
+            <a href="/process2" class="btn btn-next">
+                Next ➜ Process 2
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

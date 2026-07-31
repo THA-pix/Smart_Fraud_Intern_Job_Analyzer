@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard | InternGuard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #22c55e;
+    --primary-dark: #16a34a;
+    --dark: #14532d;
+}
+
+/* BODY */
+body {
+    background: #ffffff; /* ✅ WHITE BACKGROUND */
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    position: fixed;
+    color: white;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px 22px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.content {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+/* HEADER */
+.dashboard-header {
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* GRID FIX */
+.row.g-4 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* CARDS */
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    height: 100%;
+    min-height: 220px;
+
+    border-radius: 16px;
+    padding: 25px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    border-color: #22c55e;
+}
+
+/* ICON */
+.card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #22c55e, #4ade80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* TEXT */
+.dashboard-card h5 {
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.dashboard-card p {
+    font-size: 14px;
+    color: #555;
+}
+/* REMOVE LINK UNDERLINE FROM CARDS */
+.dashboard-card {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.dashboard-card h5,
+.dashboard-card p {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+/* REMOVE BLUE LINK STYLE */
+a {
+    text-decoration: none !important;
+}
+
+/* OPTIONAL: ON HOVER KEEP CLEAN */
+.dashboard-card:hover {
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<!-- SIDEBAR -->
+<div class="sidebar p-3">
+    <h4 class="text-center mb-4">
+        <i class="fa fa-shield-halved"></i> InternGuard
+        <small class="d-block fs-6">Admin Panel</small>
+    </h4>
+
+    <a href="/admin_dashboard" class="active">
+        <i class="fa fa-gauge me-2"></i> Dashboard
+    </a>
+
+    <a href="/view_users">
+        <i class="fa fa-users me-2"></i> Users
+    </a>
+
+    <a href="/process1">
+        <i class="fa fa-brain me-2"></i> Train Model
+    </a>
+
+    <a href="/admin_analytics">
+        <i class="fa fa-chart-line me-2"></i> Analytics
+    </a>
+
+    <a href="/view_feedback">
+        <i class="fa fa-comments me-2"></i> Feedback
+    </a>
+
+    <hr>
+
+    <a href="/admin_logout" class="text-warning">
+        <i class="fa fa-sign-out-alt me-2"></i> Logout
+    </a>
+</div>
+<!-- MAIN -->
+<div class="content">
+
+    <div class="dashboard-header">
+        <h3>🛡 Admin Dashboard</h3>
+        <p>Manage users, train models, and analyze fraud trends.</p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4 d-flex">
+            <a href="/view_users" class="dashboard-card w-100">
+                <div class="card-icon"><i class="fa fa-users"></i></div>
+                <h5>View Users</h5>
+                <p>Manage registered users and monitor activity.</p>
+            </a>
+        </div>
+
+        <div class="col-md-4 d-flex">
+            <a href="/process1" class="dashboard-card w-100">
+                <div class="card-icon"><i class="fa fa-brain"></i></div>
+                <h5>Train Model</h5>
+                <p>Train AI models using BERT, CNN and Random Forest.</p>
+            </a>
+        </div>
+
+        <div class="col-md-4 d-flex">
+            <a href="/admin_analytics" class="dashboard-card w-100">
+                <div class="card-icon"><i class="fa fa-chart-line"></i></div>
+                <h5>Analytics</h5>
+                <p>Analyze fraud trends using EMA.</p>
+            </a>
+        </div>
+
+        <div class="col-md-4 d-flex">
+            <a href="/view_feedback" class="dashboard-card w-100">
+                <div class="card-icon"><i class="fa fa-comment"></i></div>
+                <h5>Feedback</h5>
+                <p>Review user feedback.</p>
+            </a>
+        </div>
+
+        <div class="col-md-4 d-flex">
+            <a href="/retrain_panel" class="dashboard-card w-100">
+                <div class="card-icon"><i class="fa fa-rotate"></i></div>
+                <h5>Retrain Model</h5>
+                <p>Improve model with new data.</p>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

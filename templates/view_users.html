@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>View Users | InternGuard Admin</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #22c55e;
+    --primary-dark: #16a34a;
+    --light-green: #ecfdf5;
+}
+
+/* BODY */
+body {
+    background: #ffffff;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    position: fixed;
+    color: white;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px 22px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.content {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+/* HEADER */
+.page-header {
+    background: var(--light-green);
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* TABLE CARD */
+.table-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* TABLE */
+.table thead {
+    background: var(--primary);
+    color: white;
+}
+
+.table th {
+    font-weight: 600;
+    text-align: center;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* ROW HOVER */
+.table tbody tr:hover {
+    background: #f0fdf4;
+    transition: 0.2s;
+}
+
+/* BADGE STYLE */
+.badge-user {
+    background: #dcfce7;
+    color: #166534;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+/* REMOVE LINKS STYLE */
+a {
+    text-decoration: none !important;
+}
+.table thead th {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: white;
+    border: none;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar p-3">
+    <h4 class="text-center mb-4">
+        <i class="fa fa-shield-halved"></i> InternGuard
+        <small class="d-block fs-6">Admin Panel</small>
+    </h4>
+
+    <a href="/admin_dashboard">
+        <i class="fa fa-gauge me-2"></i> Dashboard
+    </a>
+
+    <a href="/view_users" class="active">
+        <i class="fa fa-users me-2"></i> Users
+    </a>
+
+    <a href="/process1">
+        <i class="fa fa-brain me-2"></i> Train Model
+    </a>
+
+    <a href="/admin_analytics">
+        <i class="fa fa-chart-line me-2"></i> Analytics
+    </a>
+
+    <a href="/view_feedback">
+        <i class="fa fa-comments me-2"></i> Feedback
+    </a>
+
+    <hr>
+
+    <a href="/admin_logout" class="text-warning">
+        <i class="fa fa-sign-out-alt me-2"></i> Logout
+    </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h3><i class="fa fa-users"></i> Registered Users</h3>
+        <p>View and manage all registered users in the system.</p>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td><span class="badge-user">{{u[0]}}</span></td>
+                    <td>{{u[1]}}</td>
+                    <td>{{u[2]}}</td>
+                    <td>{{u[3]}}</td>
+                    <td>{{u[4]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

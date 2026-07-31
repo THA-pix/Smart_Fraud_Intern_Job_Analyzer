@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Analytics |InternGuard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+    --primary: #22c55e;
+    --primary-dark: #16a34a;
+    --light-green: #ecfdf5;
+}
+
+/* BODY */
+body {
+    background: #ffffff;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    position: fixed;
+    color: white;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px 22px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.content {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+/* HEADER */
+.page-header {
+    background: var(--light-green);
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* SUMMARY CARDS */
+.stat-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.stat-total { color: #22c55e; }
+.stat-fake { color: #ef4444; }
+.stat-legit { color: #16a34a; }
+.stat-today { color: #3b82f6; }
+
+/* CHART CARD */
+.chart-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+canvas {
+    height: 260px !important;
+}
+
+/* TABLE CARD */
+.table-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+/* TABLE */
+.table {
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+/* HEADER */
+.table thead th {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: white;
+    border: 1px solid #16a34a;
+    padding: 8px;
+}
+
+/* CELLS */
+.table td {
+    border: 1px solid #cbd5e1;
+    padding: 6px;
+}
+
+/* ROWS */
+.table tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+.table tbody tr:hover {
+    background: #ecfdf5;
+}
+
+/* BADGES */
+.badge-fake {
+    background: #ef4444;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.badge-real {
+    background: #22c55e;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+/* REMOVE LINK STYLE */
+a {
+    text-decoration: none !important;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar p-3">
+    <h4 class="text-center mb-4">
+        <i class="fa fa-shield-halved"></i> InternGuard
+        <small class="d-block fs-6">Admin Panel</small>
+    </h4>
+
+    <a href="/admin_dashboard">
+        <i class="fa fa-gauge me-2"></i> Dashboard
+    </a>
+
+    <a href="/view_users">
+        <i class="fa fa-users me-2"></i> Users
+    </a>
+
+    <a href="/process1">
+        <i class="fa fa-brain me-2"></i> Train Model
+    </a>
+
+    <a href="/admin_analytics" class="active">
+        <i class="fa fa-chart-line me-2"></i> Analytics
+    </a>
+
+    <a href="/view_feedback">
+        <i class="fa fa-comments me-2"></i> Feedback
+    </a>
+
+    <hr>
+
+    <a href="/admin_logout" class="text-warning">
+        <i class="fa fa-sign-out-alt me-2"></i> Logout
+    </a>
+</div>
+
+<!-- MAIN -->
+<div class="content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h3><i class="fa fa-chart-line"></i> Fraud Intern Analytics</h3>
+        <p>Monitor predictions and analyze fraud trends.</p>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="row g-4 mb-4 text-center">
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-total"><i class="fa fa-database"></i></div>
+                <h6>Total Predictions</h6>
+                <h3>{{ total }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-fake"><i class="fa fa-triangle-exclamation"></i></div>
+                <h6>Fake Interns</h6>
+                <h3>{{ fake }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-legit"><i class="fa fa-check-circle"></i></div>
+                <h6>Legitimate Interns</h6>
+                <h3>{{ legit }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-today"><i class="fa fa-calendar-day"></i></div>
+                <h6>Today's Total</h6>
+                <h3>{{ today_total }}</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6">
+            <div class="chart-card">
+                <h6 class="text-center mb-2">Distribution</h6>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="chart-card">
+                <h6 class="text-center mb-2">Daily Analysis</h6>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    <div class="col-md-6">
+        <div class="chart-card">
+            <h6 class="text-center mb-2">Date-wise Trend</h6>
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+        <h6 class="mb-3">Prediction Records</h6>
+
+        <div style="max-height:300px; overflow:auto;">
+            <table class="table text-center align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Prediction</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{ row.job_title }}</td>
+                        <td>{{ row.company }}</td>
+                        <td>
+                            {% if row.prediction == "Fake" %}
+                                <span class="badge-fake">Fake</span>
+                            {% else %}
+                                <span class="badge-real">Legitimate</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ row.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHARTS -->
+<!-- CHARTS -->
+<script>
+new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Fake', 'Legitimate'],
+        datasets: [{
+            data: [{{ fake }}, {{ legit }}],
+            backgroundColor: [
+                '#ef4444',  // 🔴 Fake
+                '#22c55e'   // 🟢 Legitimate
+            ],
+            borderWidth: 1
+        }]
+    }
+});
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Fake Today', 'Legitimate Today'],
+        datasets: [{
+            label: 'Today Stats',
+            data: [{{ today_fake }}, {{ today_legit }}],
+            backgroundColor: [
+                '#ef4444',  // 🔴 Fake
+                '#22c55e'   // 🟢 Legitimate
+            ],
+            borderColor: [
+                '#dc2626',
+                '#16a34a'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
+new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+        labels: {{ dates | tojson }},
+        datasets: [{
+            label: 'Predictions Over Time',
+            data: {{ counts | tojson }},
+            fill: true,
+            tension: 0.4,
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34,197,94,0.2)'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'Date' }
+            },
+            y: {
+                title: { display: true, text: 'Predictions' },
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+
+</body>
+</html>

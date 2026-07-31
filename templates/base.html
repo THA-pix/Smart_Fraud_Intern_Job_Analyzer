@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fraud Job Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #F8FAFC;
+        }
+
+        h1,h2,h3 {
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: #0F172A;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .navbar a:hover {
+            color: #22C55E;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            padding: 25px;
+            margin: 30px auto;
+            width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #22C55E;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #16A34A;
+        }
+
+        /* DASHBOARD */
+        .dashboard {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .dashboard-card {
+            display: inline-block;
+            width: 250px;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        /* RESULT */
+        .result {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .fake {
+            color: #EF4444;
+        }
+
+        .real {
+            color: #22C55E;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #0F172A;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 50px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Fraud Job Detector</h2>
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+{% block content %}{% endblock %}
+
+<div class="footer">
+    <p>© 2026 Fraud Job Detection System</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Feedback | InternGuard Admin</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #22c55e;
+    --primary-dark: #16a34a;
+    --light-green: #ecfdf5;
+}
+
+/* BODY */
+body {
+    background: #ffffff;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    position: fixed;
+    color: white;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px 22px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.content {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+/* HEADER */
+.page-header {
+    background: var(--light-green);
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* TABLE CARD */
+.table-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 25px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* TABLE */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+/* HEADER (MATCH SIDEBAR) */
+.table thead th {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 14px;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* ROW STYLE */
+.table tbody tr {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    border-radius: 12px;
+    transition: 0.25s;
+}
+
+.table tbody tr:hover {
+    background: #f0fdf4;
+    transform: translateY(-2px);
+}
+
+/* CELL */
+.table td {
+    padding: 14px;
+    border: none;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* BADGES */
+.badge-fake {
+    background: #ef4444;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.badge-real {
+    background: #22c55e;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+/* COMMENTS */
+.comment-box {
+    max-width: 220px;
+    font-size: 13px;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* DATE */
+.date-text {
+    font-size: 13px;
+    color: #666;
+}
+
+/* REMOVE LINK STYLE */
+a {
+    text-decoration: none !important;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar p-3">
+    <h4 class="text-center mb-4">
+        <i class="fa fa-shield-halved"></i> InternGuard
+        <small class="d-block fs-6">Admin Panel</small>
+    </h4>
+
+    <a href="/admin_dashboard">
+        <i class="fa fa-gauge me-2"></i> Dashboard
+    </a>
+
+    <a href="/view_users">
+        <i class="fa fa-users me-2"></i> Users
+    </a>
+
+    <a href="/process1">
+        <i class="fa fa-brain me-2"></i> Train Model
+    </a>
+
+    <a href="/admin_analytics">
+        <i class="fa fa-chart-line me-2"></i> Analytics
+    </a>
+
+    <a href="/view_feedback" class="active">
+        <i class="fa fa-comments me-2"></i> Feedback
+    </a>
+
+    <hr>
+
+    <a href="/admin_logout" class="text-warning">
+        <i class="fa fa-sign-out-alt me-2"></i> Logout
+    </a>
+</div>
+
+<!-- MAIN -->
+<div class="content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h3><i class="fa fa-comments"></i> User Feedback</h3>
+        <p>Review predictions and feedback submitted by users.</p>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Prediction</th>
+                    <th>User Feedback</th>
+                    <th>Comments</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{ row.job_title }}</td>
+                    <td>{{ row.company }}</td>
+
+                    <td>
+                        {% if row.prediction == "Fake" %}
+                            <span class="badge-fake">Fake</span>
+                        {% else %}
+                            <span class="badge-real">Legitimate</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ row.user_feedback }}</td>
+
+                    <td>
+                        <div class="comment-box" title="{{ row.comments }}">
+                            {{ row.comments }}
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="date-text">{{ row.created_at }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
