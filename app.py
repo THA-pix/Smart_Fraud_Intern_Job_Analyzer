@@ -27,15 +27,22 @@ df = None
 accuracy = 0
 report = {}
 
-DB_USER = os.environ.get("DB_USER", "root")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
+import os
+import mysql.connector
+
+DB_HOST = os.environ.get("MYSQLHOST")
+DB_PORT = int(os.environ.get("MYSQLPORT", 3306))
+DB_USER = os.environ.get("MYSQLUSER")
+DB_PASSWORD = os.environ.get("MYSQLPASSWORD")
+DB_NAME = os.environ.get("MYSQLDATABASE")
 
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
+        host=DB_HOST,
+        port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
-        database="fraud_job",
+        database=DB_NAME,
         charset="utf8"
     )
 
