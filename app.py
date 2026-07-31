@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from PIL import Image
-from transformers import BertTokenizer, TFBertModel
+#from transformers import BertTokenizer, TFBertModel
 from tensorflow.keras import layers, models
 
 
