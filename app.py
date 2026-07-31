@@ -30,11 +30,11 @@ report = {}
 import os
 import mysql.connector
 
-DB_HOST = os.environ.get("mysql.railway.internal")
+DB_HOST = os.environ.get("MYSQLHOST")
 DB_PORT = int(os.environ.get("MYSQLPORT", 3306))
-DB_USER = os.environ.get("root")
-DB_PASSWORD = os.environ.get("WMZqeStNFlIxawfrfFOZwiXfvQyhtzmm")
-DB_NAME = os.environ.get("railway")
+DB_USER = os.environ.get("MYSQLUSER")
+DB_PASSWORD = os.environ.get("MYSQLPASSWORD")
+DB_NAME = os.environ.get("MYSQLDATABASE")
 
 def get_db():
     return mysql.connector.connect(
